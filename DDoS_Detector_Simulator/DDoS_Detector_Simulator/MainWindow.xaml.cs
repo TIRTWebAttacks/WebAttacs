@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +21,7 @@ namespace DDoS_Detector_Simulator
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool isSpotAvailable(int left, int top, int size, int marginRadius)
+        public bool isSpotAvailable(int left, int top, int size, int marginRadius)
         {
             double proposedCenterLeft = left + size / 2;
             double proposedCenterTop = top + size / 2;
@@ -37,43 +38,77 @@ namespace DDoS_Detector_Simulator
             return true;
         }
 
+        public Thread t;
+
         public MainWindow()
         {
             InitializeComponent();
 
             Show();
 
-            const int numberOfMachines = 100;
-            const int machineSize = 30;
-            const int marginRadius = 80;
-            Random rnd = new Random();
+            const int numberOfMachines = 20;
+
+            List<Host> hosts = new List<Host>();
 
             for (int i = 0; i < numberOfMachines; ++i)
             {
-                var ellipse = new Ellipse();
-                ellipse.Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(200), (byte)rnd.Next(200), (byte)rnd.Next(200)));
-                ellipse.Width = machineSize;
-                ellipse.Height = machineSize;
+                var infected = i == 0;
+                var host = new Host(this, infected);
+                hosts.Add(host);
+                canvas.Children.Add(host.ellipse);
+            }
 
-                int left, top;
-                int attempts = 0;
-                do
+            Random rnd = new Random();
+            List<Connection> connections = new List<Connection>();
+
+            t = new Thread(() =>
+            {
+                while (true)
                 {
-                    attempts += 1;
-                    if (attempts >= 10000)
+                    foreach (var host in hosts)
                     {
-                        throw new Exception("Canvas is probably too small to draw that many machines!");
+                        double p = rnd.NextDouble();
+                        if (p < host.probabilityOfStartingConnection)
+                        {
+                            Host to;
+                            do
+                            {
+                                to = hosts[rnd.Next(hosts.Count)];
+                            } while (host == to);
+
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                var connection = new Connection(host, to);
+                                connections.Add(connection);
+                                canvas.Children.Add(connection.line);
+
+                                double pp = rnd.NextDouble();
+                                if (pp < host.probabilityOfInfectingOtherHost)
+                                {
+                                    to.setInfected(true);
+                                }
+                            });
+                        }
                     }
 
-                    left = rnd.Next((int)canvas.ActualWidth - machineSize);
-                    top = rnd.Next((int)canvas.ActualHeight - machineSize);
-                }
-                while (!isSpotAvailable(left, top, machineSize, marginRadius));
+                    foreach(var c in connections)
+                    {
+                        if(c.hideTime < DateTime.Now)
+                        {
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                canvas.Children.Remove(c.line);
+                            });
+                        }
+                    }
 
-                Canvas.SetLeft(ellipse, left);
-                Canvas.SetTop(ellipse, top);
-                canvas.Children.Add(ellipse);
-            }
+                    connections.RemoveAll(c => c.hideTime < DateTime.Now);
+
+                    Thread.Sleep(100);
+                }
+            });
+            t.Start();
         }
+
     }
 }
