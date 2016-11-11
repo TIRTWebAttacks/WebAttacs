@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace DDoS_Detector_Simulator
@@ -48,6 +40,8 @@ namespace DDoS_Detector_Simulator
 
             const int numberOfMachines = 20;
 
+            //this.Hosts.Text = numberOfMachines.ToString();
+
             List<Host> hosts = new List<Host>();
 
             for (int i = 0; i < numberOfMachines; ++i)
@@ -75,19 +69,7 @@ namespace DDoS_Detector_Simulator
                             {
                                 to = hosts[rnd.Next(hosts.Count)];
                             } while (host == to);
-
-                            this.Dispatcher.Invoke(() =>
-                            {
-                                var connection = new Connection(host, to);
-                                connections.Add(connection);
-                                canvas.Children.Add(connection.line);
-
-                                double pp = rnd.NextDouble();
-                                if (pp < host.probabilityOfInfectingOtherHost)
-                                {
-                                    to.setInfected(true);
-                                }
-                            });
+                            this.Dispatcher.BeginInvoke(new InvokeCreateConection(createConnection), host, to, connections);
                         }
                     }
 
@@ -95,10 +77,7 @@ namespace DDoS_Detector_Simulator
                     {
                         if(c.hideTime < DateTime.Now)
                         {
-                            this.Dispatcher.Invoke(() =>
-                            {
-                                canvas.Children.Remove(c.line);
-                            });
+                            this.Dispatcher.BeginInvoke(new InvokeDelegate(clearConnection), c);
                         }
                     }
 
@@ -108,6 +87,28 @@ namespace DDoS_Detector_Simulator
                 }
             });
             t.Start();
+        }
+
+        public delegate void InvokeDelegate(Connection c);
+        public void clearConnection(Connection c)
+        {
+            canvas.Children.Remove(c.line);
+        }
+
+        public delegate void InvokeCreateConection(Host host, Host to, ref List<Connection> connections);
+        public void createConnection(Host host, Host to, ref List<Connection> connections)
+        {
+            Random rnd = new Random();
+
+            var connection = new Connection(host, to);
+            connections.Add(connection);
+            canvas.Children.Add(connection.line);
+
+            double pp = rnd.NextDouble();
+            if (pp < host.probabilityOfInfectingOtherHost)
+            {
+                to.setInfected(true);
+            }
         }
 
     }
