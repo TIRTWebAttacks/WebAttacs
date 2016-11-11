@@ -36,12 +36,16 @@ namespace DDoS_Detector_Simulator
         const int numberOfMachines = 20;
         static List<Host> hosts = new List<Host>();
         public static List<Connection> connections = new List<Connection>();
+        private bool RunProgram = false;
 
         public MainWindow()
         {
             InitializeComponent();
 
             Show();
+
+            if (this.Start.IsPressed) RunProgram = !RunProgram;
+
             for (int i = 0; i < numberOfMachines; ++i)
             {
                 var infected = i == 0;
@@ -50,9 +54,8 @@ namespace DDoS_Detector_Simulator
                 canvas.Children.Add(host.ellipse);
             }
 
-            Random rnd = new Random();
-            
 
+            Random rnd = new Random();
             t = new Thread(() =>
             {
                 while (true)
@@ -118,6 +121,8 @@ namespace DDoS_Detector_Simulator
             this.Time.Text = (DateTime.Now - ProgramStart).ToString();
             this.IfectedHosts.Text = infectedMachines.ToString();
             this.NumberOfConnectionsATM.Text = connections.Count.ToString();
+            this.InfectionPercentage.Text = "0.05";
+            this.ConnectionPercentage.Text = "0.05"; // Do poprawy
         }
 
     }

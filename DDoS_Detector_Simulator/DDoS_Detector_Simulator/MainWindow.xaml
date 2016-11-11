@@ -12,5 +12,10 @@
         <TextBox x:Name="IfectedHosts" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="51" Width="168"/>
         <TextBox x:Name="Time" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="104" Width="168"/>
         <TextBox x:Name="NumberOfConnectionsATM" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="162" Width="168"/>
+        <Button x:Name="Start" Content="Start/Stop" Canvas.Left="610" Canvas.Top="260" Width="168"/>
+        <TextBox x:Name="InfectionPercentage" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="346" Width="168"/>
+        <Label x:Name="InfectionChance" Content="Infection chance" Canvas.Left="610" Canvas.Top="315" Width="168"/>
+        <TextBox x:Name="ConnectionPercentage" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="435" Width="168"/>
+        <Label x:Name="ConnectionChance" Content="Connection chance" Canvas.Left="610" Canvas.Top="404" Width="168"/>
     </Canvas>
 </Window>

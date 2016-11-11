@@ -51,8 +51,6 @@ namespace DDoS_Detector_Simulator
 
         public void setInfected(bool state)
         {
-            
-
             if(state)
             {
                 ellipse.Fill = new ImageBrush(new BitmapImage(new Uri(@"zombie.png", UriKind.Relative)));
