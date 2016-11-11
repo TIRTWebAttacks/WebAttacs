@@ -7,5 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800">
     <Canvas x:Name="canvas" Margin="10,10,182,10">
+        <DataGrid x:Name="dataGrid" Canvas.Left="610" Canvas.Top="-7" Height="559" Width="168"/>
+        <TextBox x:Name="NumberOfHosts" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="-7" Width="168"/>
+        <TextBox x:Name="IfectedHosts" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="51" Width="168"/>
+        <TextBox x:Name="Time" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="104" Width="168"/>
+        <TextBox x:Name="NumberOfConnectionsATM" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="162" Width="168"/>
     </Canvas>
 </Window>

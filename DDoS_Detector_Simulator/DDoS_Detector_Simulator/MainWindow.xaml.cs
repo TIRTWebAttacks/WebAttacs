@@ -31,19 +31,17 @@ namespace DDoS_Detector_Simulator
         }
 
         public Thread t;
+        DateTime ProgramStart = DateTime.Now;
+        public static int infectedMachines = 0;
+        const int numberOfMachines = 20;
+        static List<Host> hosts = new List<Host>();
+        public static List<Connection> connections = new List<Connection>();
 
         public MainWindow()
         {
             InitializeComponent();
 
             Show();
-
-            const int numberOfMachines = 20;
-
-            //this.Hosts.Text = numberOfMachines.ToString();
-
-            List<Host> hosts = new List<Host>();
-
             for (int i = 0; i < numberOfMachines; ++i)
             {
                 var infected = i == 0;
@@ -53,7 +51,7 @@ namespace DDoS_Detector_Simulator
             }
 
             Random rnd = new Random();
-            List<Connection> connections = new List<Connection>();
+            
 
             t = new Thread(() =>
             {
@@ -82,11 +80,13 @@ namespace DDoS_Detector_Simulator
                     }
 
                     connections.RemoveAll(c => c.hideTime < DateTime.Now);
-
+                    this.Dispatcher.BeginInvoke(new InvokeDrawSidePanel(drawInformationsOnSidePanel));
                     Thread.Sleep(100);
                 }
             });
             t.Start();
+
+            
         }
 
         public delegate void InvokeDelegate(Connection c);
@@ -109,6 +109,15 @@ namespace DDoS_Detector_Simulator
             {
                 to.setInfected(true);
             }
+        }
+
+        public delegate void InvokeDrawSidePanel();
+        public void drawInformationsOnSidePanel()
+        {
+            this.NumberOfHosts.Text = numberOfMachines.ToString();
+            this.Time.Text = (DateTime.Now - ProgramStart).ToString();
+            this.IfectedHosts.Text = infectedMachines.ToString();
+            this.NumberOfConnectionsATM.Text = connections.Count.ToString();
         }
 
     }

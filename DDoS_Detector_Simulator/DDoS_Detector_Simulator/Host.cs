@@ -51,16 +51,20 @@ namespace DDoS_Detector_Simulator
 
         public void setInfected(bool state)
         {
-            infected = state;
+            
 
             if(state)
             {
                 ellipse.Fill = new ImageBrush(new BitmapImage(new Uri(@"zombie.png", UriKind.Relative)));
+                if(!infected)
+                MainWindow.infectedMachines++;
             }
             else
             {
                 ellipse.Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(200), (byte)rnd.Next(200), (byte)rnd.Next(200)));
             }
+
+            infected = state;
         }
     }
 }
