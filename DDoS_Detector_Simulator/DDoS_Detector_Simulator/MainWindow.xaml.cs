@@ -70,7 +70,7 @@ namespace DDoS_Detector_Simulator
                             {
                                 to = hosts[rnd.Next(hosts.Count)];
                             } while (host == to);
-                            this.Dispatcher.BeginInvoke(new InvokeCreateConection(createConnection), host, to, connections);
+                            this.Dispatcher.Invoke(new InvokeCreateConection(createConnection), host, to, connections);
                         }
                     }
 
@@ -78,7 +78,7 @@ namespace DDoS_Detector_Simulator
                     {
                         if(c.hideTime < DateTime.Now)
                         {
-                            this.Dispatcher.BeginInvoke(new InvokeDelegate(clearConnection), c);
+                            this.Dispatcher.Invoke(new InvokeDelegate(clearConnection), c);
                         }
                     }
 
