@@ -88,8 +88,6 @@ namespace DDoS_Detector_Simulator
                 }
             });
             t.Start();
-
-            
         }
 
         public delegate void InvokeDelegate(Connection c);
@@ -125,5 +123,9 @@ namespace DDoS_Detector_Simulator
             this.ConnectionPercentage.Text = "0.05"; // Do poprawy
         }
 
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            t.Abort();
+        }
     }
 }

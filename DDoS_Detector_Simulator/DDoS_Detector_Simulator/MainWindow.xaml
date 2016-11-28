@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DDoS_Detector_Simulator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="MainWindow" Height="600" Width="800"
+        Closed="Window_Closed">
     <Canvas x:Name="canvas" Margin="10,10,182,10">
         <DataGrid x:Name="dataGrid" Canvas.Left="610" Canvas.Top="-7" Height="559" Width="168"/>
         <TextBox x:Name="NumberOfHosts" Height="53" Canvas.Left="610" TextWrapping="Wrap" Text="TextBox" Canvas.Top="-7" Width="168"/>
