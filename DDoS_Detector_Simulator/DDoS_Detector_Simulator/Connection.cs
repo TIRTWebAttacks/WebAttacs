@@ -22,7 +22,7 @@ namespace DDoS_Detector_Simulator
             this.to = to;
 
             beginTime = DateTime.Now;
-            hideTime = beginTime.AddSeconds(1);
+            hideTime = beginTime.AddMilliseconds(500);
             this.isResponse = isResponse;
             line = new Line();
 

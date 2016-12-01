@@ -53,13 +53,15 @@ namespace DDoS_Detector_Simulator
             }
             while (!window.isSpotAvailable(left, top, machineSize, marginRadius));
 
+            resetLimit();
+
             Canvas.SetLeft(ellipse, left);
             Canvas.SetTop(ellipse, top);
         }
 
         public void resetLimit()
         {
-            responseLimit = 5;
+            responseLimit = 25;
         }
 
         public void setInfected(bool state)

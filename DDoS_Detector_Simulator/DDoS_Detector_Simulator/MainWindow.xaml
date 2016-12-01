@@ -19,5 +19,6 @@
         <Label x:Name="ConnectionChance" Content="Connection chance" Canvas.Left="{Binding ElementName=canvas, Path=ActualWidth}" Margin="10,0,0,0" Canvas.Top="404" Width="168"/>
         <Button x:Name="StartAttack" Content="Start attack" Canvas.Left="{Binding ElementName=canvas, Path=ActualWidth}" Canvas.Top="285" Margin="10,0,0,0" Width="168" Height="25" Click="StartAttack_Click"/>
         <TextBox x:Name="TargetResponseQueue" Height="31" Canvas.Left="{Binding ElementName=canvas, Path=ActualWidth}" Margin="10,0,0,0" Canvas.Top="515" Width="168"/>
+        <TextBox x:Name="TargetResponseLimit" Height="31" Canvas.Left="{Binding ElementName=canvas, Path=ActualWidth}" Margin="10,0,0,0" Canvas.Top="551" Width="168"/>
     </Canvas>
 </Window>

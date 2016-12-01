@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,7 +37,7 @@ namespace DDoS_Detector_Simulator
         public Thread t;
         DateTime ProgramStart = DateTime.Now;
         public static int infectedMachines = 0;
-        const int numberOfMachines = 100;
+        const int numberOfMachines = 200;
         static List<Host> hosts = new List<Host>();
         public static List<Connection> connections = new List<Connection>();
         private bool RunProgram = false;
@@ -62,6 +63,7 @@ namespace DDoS_Detector_Simulator
             Random rnd = new Random();
             t = new Thread(() =>
             {
+                DateTime lastLimitReset = DateTime.Now;
                 while (true)
                 {
                     foreach (var host in hosts)
@@ -84,18 +86,27 @@ namespace DDoS_Detector_Simulator
                             } while (host == to);
                             this.Dispatcher.Invoke(new InvokeCreateConection(createConnection), host, to, connections, false);
                         }
-
-                        int limit = 2;
+                        
                         foreach (var target in host.responseTargets.Reverse<Host>())
                         {
-                            if (0 == limit--)
+                            if (host.responseLimit <= 0)
                                 break;
+                            host.responseLimit--;
                             this.Dispatcher.Invoke(new InvokeCreateConection(createConnection), host, target, connections, true);
                             host.responseTargets.Remove(target);
                         }
                     }
 
-                    foreach(var c in connections)
+                    if ((DateTime.Now - lastLimitReset).Seconds >= 1)
+                    {
+                        foreach (var host in hosts)
+                        {
+                            host.resetLimit();
+                        }
+                        lastLimitReset = DateTime.Now;
+                    }
+
+                    foreach (var c in connections)
                     {
                         if(c.hideTime < DateTime.Now)
                         {
@@ -104,7 +115,7 @@ namespace DDoS_Detector_Simulator
                     }
 
                     connections.RemoveAll(c => c.hideTime < DateTime.Now);
-                    this.Dispatcher.BeginInvoke(new InvokeDrawSidePanel(drawInformationsOnSidePanel));
+                    this.Dispatcher.Invoke(new InvokeDrawSidePanel(drawInformationsOnSidePanel));
                     Thread.Sleep(100);
                 }
             });
@@ -143,8 +154,9 @@ namespace DDoS_Detector_Simulator
             this.IfectedHosts.Text = infectedMachines.ToString();
             this.NumberOfConnectionsATM.Text = connections.Count.ToString();
             this.InfectionPercentage.Text = "0.05";
-            this.ConnectionPercentage.Text = "0.05"; // Do poprawy
-            this.TargetResponseQueue.Text = hosts[2].responseTargets.Count.ToString();
+            this.ConnectionPercentage.Text = "0.05"; // TODO
+            this.TargetResponseQueue.Text = hosts[1].responseTargets.Count.ToString();
+            this.TargetResponseLimit.Text = hosts[1].responseLimit.ToString();
         }
 
         private void Window_Closed(object sender, EventArgs e)
