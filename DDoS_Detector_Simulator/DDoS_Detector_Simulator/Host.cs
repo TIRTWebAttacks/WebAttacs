@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Controls;
@@ -8,12 +9,19 @@ namespace DDoS_Detector_Simulator
 {
     public class Host
     {
-        public const int machineSize = 30;
-        public const int marginRadius = 80;
+        public const int machineSize = 20;
+        public const int marginRadius = 20;
 
         public bool infected = false;
         public double probabilityOfStartingConnection = 0.05;
-        public double probabilityOfInfectingOtherHost = 0.05;
+        public double probabilityOfInfectingOtherHost = 0.1;
+        public double probabilityOfAttackingTarget = 0.5;
+        public List<Host> responseTargets = new List<Host>();
+
+        public int responseLimit;
+
+        public int inputInCurrentTimeFrame = 0;
+        public int outputInCurrentTimeFrame = 0;
 
         public Ellipse ellipse;
 
@@ -49,13 +57,18 @@ namespace DDoS_Detector_Simulator
             Canvas.SetTop(ellipse, top);
         }
 
+        public void resetLimit()
+        {
+            responseLimit = 5;
+        }
+
         public void setInfected(bool state)
         {
             if(state)
             {
                 ellipse.Fill = new ImageBrush(new BitmapImage(new Uri(@"zombie.png", UriKind.Relative)));
                 if(!infected)
-                MainWindow.infectedMachines++;
+                    MainWindow.infectedMachines++;
             }
             else
             {
@@ -64,5 +77,13 @@ namespace DDoS_Detector_Simulator
 
             infected = state;
         }
+
+        public void receiveConnection(Connection c)
+        {
+            if (c.isResponse)
+                return;
+            responseTargets.Add(c.from);
+        }
+
     }
 }

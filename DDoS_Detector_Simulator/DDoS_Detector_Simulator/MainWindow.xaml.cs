@@ -13,6 +13,9 @@ namespace DDoS_Detector_Simulator
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool attackIsStarted = false;
+        private Host beeingAttackedHost;
+
         public bool isSpotAvailable(int left, int top, int size, int marginRadius)
         {
             double proposedCenterLeft = left + size / 2;
@@ -33,7 +36,7 @@ namespace DDoS_Detector_Simulator
         public Thread t;
         DateTime ProgramStart = DateTime.Now;
         public static int infectedMachines = 0;
-        const int numberOfMachines = 20;
+        const int numberOfMachines = 100;
         static List<Host> hosts = new List<Host>();
         public static List<Connection> connections = new List<Connection>();
         private bool RunProgram = false;
@@ -54,6 +57,7 @@ namespace DDoS_Detector_Simulator
                 canvas.Children.Add(host.ellipse);
             }
 
+            beeingAttackedHost = hosts[1];
 
             Random rnd = new Random();
             t = new Thread(() =>
@@ -68,9 +72,26 @@ namespace DDoS_Detector_Simulator
                             Host to;
                             do
                             {
-                                to = hosts[rnd.Next(hosts.Count)];
+                                double pp = rnd.NextDouble();
+                                if (pp < host.probabilityOfAttackingTarget && attackIsStarted && host.infected)
+                                {
+                                    to = beeingAttackedHost;
+                                }
+                                else
+                                {
+                                    to = hosts[rnd.Next(hosts.Count)];
+                                }
                             } while (host == to);
-                            this.Dispatcher.Invoke(new InvokeCreateConection(createConnection), host, to, connections);
+                            this.Dispatcher.Invoke(new InvokeCreateConection(createConnection), host, to, connections, false);
+                        }
+
+                        int limit = 2;
+                        foreach (var target in host.responseTargets.Reverse<Host>())
+                        {
+                            if (0 == limit--)
+                                break;
+                            this.Dispatcher.Invoke(new InvokeCreateConection(createConnection), host, target, connections, true);
+                            host.responseTargets.Remove(target);
                         }
                     }
 
@@ -96,20 +117,22 @@ namespace DDoS_Detector_Simulator
             canvas.Children.Remove(c.line);
         }
 
-        public delegate void InvokeCreateConection(Host host, Host to, ref List<Connection> connections);
-        public void createConnection(Host host, Host to, ref List<Connection> connections)
+        public delegate void InvokeCreateConection(Host host, Host to, ref List<Connection> connections, bool isResponse);
+        public void createConnection(Host host, Host to, ref List<Connection> connections, bool isResponse)
         {
             Random rnd = new Random();
 
-            var connection = new Connection(host, to);
+            var connection = new Connection(host, to, isResponse);
             connections.Add(connection);
             canvas.Children.Add(connection.line);
 
             double pp = rnd.NextDouble();
-            if (pp < host.probabilityOfInfectingOtherHost)
+            if (pp < host.probabilityOfInfectingOtherHost && to != beeingAttackedHost)
             {
                 to.setInfected(true);
             }
+
+            to.receiveConnection(connection);
         }
 
         public delegate void InvokeDrawSidePanel();
@@ -121,11 +144,17 @@ namespace DDoS_Detector_Simulator
             this.NumberOfConnectionsATM.Text = connections.Count.ToString();
             this.InfectionPercentage.Text = "0.05";
             this.ConnectionPercentage.Text = "0.05"; // Do poprawy
+            this.TargetResponseQueue.Text = hosts[2].responseTargets.Count.ToString();
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             t.Abort();
+        }
+
+        private void StartAttack_Click(object sender, RoutedEventArgs e)
+        {
+            attackIsStarted = !attackIsStarted;
         }
     }
 }
